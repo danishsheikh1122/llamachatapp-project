@@ -1,0 +1,46 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  userId   String    @id @unique @default(uuid())
+  email    String    @unique
+  name     String
+  chats    Chat[]    @relation("UserChats")
+}
+
+model Chat {
+  chatId    String    @id @unique @default(uuid())
+  userId    String    // Reference to User
+  user      User      @relation("UserChats", fields: [userId], references: [userId])
+  messages  Message[] @relation("ChatMessages")//no need to pass message while creating the chat 
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Message {
+  messageId Int    @id @unique @default(autoincrement())
+  chatId    String    // Foreign key to the Chat model
+  sender    MessageSender
+  message   String
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  chat      Chat      @relation("ChatMessages", fields: [chatId], references: [chatId])
+}
+
+enum MessageSender {
+  USER
+  AI
+}
