@@ -1,14 +1,10 @@
-import NavBarCMP from "@/components/NavBarCMP";
-import { Button } from "@/components/ui/button";
 import React from "react";
+import { NavBarCMP } from "@/components/NavBarCMP";
 
 const Homepage = () => {
   return (
-    <div className="w-full h-screen bg-black/85">
+    <div className="w-full h-screen bg-white">
       <NavBarCMP></NavBarCMP>
-      <Button size={"default"} variant={"ghost"}>
-        Hello
-      </Button>
     </div>
   );
 };
