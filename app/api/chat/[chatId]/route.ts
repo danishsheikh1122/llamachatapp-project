@@ -71,7 +71,7 @@ export async function GET(
 
   const messages = await prisma.message.findMany({
     where: { chatId: params.chatId },
-    orderBy: { updatedAt: "desc" },
+    orderBy: { updatedAt: "asc" },
   });
 
   if (!messages)
