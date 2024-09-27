@@ -7,6 +7,7 @@ import { MoveRight, Menu, X, LogIn } from "lucide-react";
 import Image from "next/image";
 import Logo from "@/components/images/llama50.png";
 import { SignInButton, SignUpButton, UserButton, useUser } from "@clerk/nextjs";
+import { ModeToggle } from "./ui/darkmode-toggel";
 const NavItem = ({
   href,
   children,
@@ -41,20 +42,10 @@ export const NavBarCMP = () => {
 
   const toggleMenu = () => setIsMenuOpen(!isMenuOpen);
 
-  const handleLogin = () => {
-    // Add login logic here
-    console.log("Login clicked");
-  };
-
-  const handleSignUp = () => {
-    // Add sign-up logic here
-    console.log("Sign up clicked");
-  };
-
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all duration-300 ${
-        isScrolled ? "shadow-md" : ""
+      className={`fixed top-0 left-0 right-0 z-50 backdrop-blur supports-[backdrop-filter]:bg-background transition-all duration-300 ${
+        isScrolled ? "shadow-md dark:shadow-md dark:border-b-2" : ""
       }`}
     >
       <div className="container mx-auto px-4">
@@ -74,6 +65,9 @@ export const NavBarCMP = () => {
             <NavItem href="/">Home</NavItem>
             <NavItem href="/api">API</NavItem>
             <NavItem href="/about">About</NavItem>
+            <NavItem href="">
+              <ModeToggle></ModeToggle>
+            </NavItem>
           </div>
           <div className="hidden md:flex items-center space-x-2">
             {user ? (
@@ -86,21 +80,12 @@ export const NavBarCMP = () => {
             ) : (
               <div className="flex items-center space-x-2">
                 <SignInButton mode="modal">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={handleLogin}
-                    className="font-mono"
-                  >
+                  <Button variant="outline" size="sm" className="font-mono">
                     Login
                   </Button>
                 </SignInButton>
                 <SignUpButton mode="modal">
-                  <Button
-                    size="sm"
-                    onClick={handleSignUp}
-                    className="group font-mono"
-                  >
+                  <Button size="sm" className="group font-mono">
                     <span className="flex items-center gap-2">
                       Get started
                       <MoveRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
@@ -110,6 +95,7 @@ export const NavBarCMP = () => {
               </div>
             )}
           </div>
+
           <div className="md:hidden">
             <Button
               variant="ghost"
@@ -138,6 +124,9 @@ export const NavBarCMP = () => {
             <NavItem href="/about" onClick={toggleMenu}>
               About
             </NavItem>
+            <NavItem href="" onClick={toggleMenu}>
+              <ModeToggle></ModeToggle>
+            </NavItem>
 
             {user ? (
               <div className="flex items-center justify-center gap-2 font-mono">
@@ -153,7 +142,6 @@ export const NavBarCMP = () => {
                     variant="outline"
                     size="sm"
                     onClick={() => {
-                      handleLogin();
                       toggleMenu();
                     }}
                     className="w-full justify-start font-mono text-left h-12 flex items-center gap-2"
@@ -166,7 +154,6 @@ export const NavBarCMP = () => {
                   <Button
                     size="sm"
                     onClick={() => {
-                      handleSignUp();
                       toggleMenu();
                     }}
                     className="w-full justify-start font-mono text-left h-12 group flex items-center gap-2"

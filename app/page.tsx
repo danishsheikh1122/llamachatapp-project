@@ -3,7 +3,7 @@ import { NavBarCMP } from "@/components/NavBarCMP";
 
 const Homepage = () => {
   return (
-    <div className="w-full h-screen bg-white">
+    <div className="w-full h-full">
       <NavBarCMP></NavBarCMP>
     </div>
   );
