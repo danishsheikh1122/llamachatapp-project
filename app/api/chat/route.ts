@@ -1,4 +1,3 @@
-
 import prisma from "@/prisma/client";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
@@ -21,12 +20,13 @@ export async function POST() {
   });
 
   // Create a new user if it does not exist
+  // console.log(user?.emailAddresses[0].emailAddress)
   if (!isUser) {
     isUser = await prisma.user.create({
       data: {
         userId,
-        email: user?.email || "", // Provide a default value if email is not present
-        name: user?.name || "", // Provide a default value if name is not present
+        email: user?.emailAddresses[0].emailAddress || "", // Provide a default value if email is not present
+        name: user?.firstName || "", // Provide a default value if name is not present
       },
     });
 
@@ -130,43 +130,37 @@ export async function POST() {
 //   }
 // }
 
-
 export async function GET(req: Request) {
-  const user = await currentUser();
-  if (!user) {
-    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-  }
-
   const url = new URL(req.url);
-  const limit = parseInt(url.searchParams.get("limit") || "20");
+  const limit = parseInt(url.searchParams.get("limit") || "10");
+  const offset = parseInt(url.searchParams.get("offset") || "0");
+
+  // const user = await currentUser();
+  // if (!user) {
+  //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  // }
 
   try {
+    // Fetch recent chats with pagination
     const recentChats = await prisma.chat.findMany({
-      where: { userId: user.id },
+      where: { userId: 'user_2mcbyltT9lF1Ujx3n0ArO0HG4SW' },
       include: {
         messages: {
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: "desc" }, // Fetch messages in ascending order to get the first message easily
         },
       },
-      orderBy: { createdAt: "desc" },
+      orderBy: { createdAt: "asc" },
+      skip: offset, // Apply pagination for chats
+      take: limit,
     });
 
-    const allMessages = recentChats.flatMap((chat) =>
-      chat.messages.map((message) => ({
-        id: message.messageId,
-        text: message.message,
-        chatId: chat.chatId,
-        createdAt: message.createdAt,
-      }))
-    );
+    // Extract chatId and the first message text from each chat
+    const chatData = recentChats.map((chat) => ({
+      chatId: chat.chatId,
+      firstMessage: chat.messages.length > 0 ? chat.messages[0].message : null,
+    }));
 
-    const recentMessages = allMessages
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-      .slice(0, limit);
-
-    const hasMore = recentMessages.length === limit && allMessages.length > limit; // Determine if there are more messages
-
-    return NextResponse.json({ recentMessages, hasMore }, { status: 200 });
+    return NextResponse.json({ chats: chatData }, { status: 200 });
   } catch (error) {
     console.error("Error fetching chats:", error);
     return NextResponse.json(

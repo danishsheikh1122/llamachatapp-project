@@ -47,6 +47,12 @@ export async function POST(
   // save message to database with userId
 }
 
+// dummy response
+// {
+//   "sender":"USER",
+//   "message":"i will have billion dollor soon inshaallah"
+// }
+
 export async function GET(
   req: NextRequest,
   { params }: { params: { chatId: string } }
